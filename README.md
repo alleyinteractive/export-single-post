@@ -4,17 +4,17 @@ Contributors: alleyinteractive
 
 Tags: alleyinteractive, wp-export-single-post
 
-Stable tag: 0.0.0
+Stable tag: 0.1.0
 
 Requires at least: 6.3
 
-Tested up to: 6.7
+Tested up to: 6.9
 
 Requires PHP: 8.2
 
 License: GPL v2 or later
 
-[![Testing Suite](https://github.com/alleyinteractive/wp-export-single-post/actions/workflows/all-pr-tests.yml/badge.svg?branch=develop)](https://github.com/alleyinteractive/wp-export-single-post/actions/workflows/all-pr-tests.yml)
+[![Testing Suite](https://github.com/alleyinteractive/export-single-post/actions/workflows/all-pr-tests.yml/badge.svg?branch=develop)](https://github.com/alleyinteractive/export-single-post/actions/workflows/all-pr-tests.yml)
 
 Exports single posts in WordPress WXR format.
 
@@ -23,58 +23,30 @@ Exports single posts in WordPress WXR format.
 You can install the package via Composer:
 
 ```bash
-composer require alleyinteractive/wp-export-single-post
+composer require alleyinteractive/export-single-post
 ```
 
 ## Usage
 
-Activate the plugin in WordPress and use it like so:
+Once activated, an **Export** link appears in the row actions for each post and page in the WordPress admin list view. Clicking it downloads a WXR XML file containing that post and all of its attachments. The link is only shown to users with the `export` capability.
+
+### Filters
+
+**`wp_export_single_post_post_types`** — Override the full list of post types that display the Export link. Receives an array of post type slugs (defaults to all post types with `can_export` set).
 
 ```php
-$plugin = Create_WordPress_Plugin\Export_Single_Post\Export_Single_Post();
-$plugin->perform_magic();
+add_filter( 'wp_export_single_post_post_types', function ( array $post_types ): array {
+    return [ 'post', 'page' ];
+} );
 ```
 
-## Development
+**`wp_export_single_post_should_include_post_type`** — Allow or block a specific post type. Receives a boolean and the post type slug.
 
-To setup a WordPress installation and run the plugin in a local environment, you
-can use `wp-env` via the `composer dev` command:
-
-```sh
-npm install
-composer dev
+```php
+add_filter( 'wp_export_single_post_should_include_post_type', function ( bool $include, string $post_type ): bool {
+    return $post_type !== 'my_private_type';
+}, 10, 2 );
 ```
-
-The command will start a local WordPress environment with the plugin activated
-while also running the front-end assets build process. You can also run `npm run
-start` to start the front-end assets build process separately. The front-end
-assets will be compiled into the `build` directory and will be enqueued
-automatically by the plugin.
-
-## Registering Meta
-
-The plugin supports registering post and term meta via JSON files located in the
-`config` directory. Out of the box, the plugin will look for
-`config/post-meta.json` for post meta and `config/term-meta.json` for term meta.
-
-```json
-{
-  "$schema": "https://raw.githubusercontent.com/alleyinteractive/mantle-framework/HEAD/src/mantle/support/schema/meta.json",
-  "example_meta_key": {
-    "post_types": "article",
-    "type": "string"
-  },
-  "another_meta_key": {
-    "post_types": [ "article", "page" ],
-    "type": "number",
-    "single": false,
-    "default": 0
-  }
-}
-```
-
-For more information on how to register meta via JSON files,
-[see the documentation](https://mantle.alley.com/docs/features/support/helpers#register_meta_from_file).
 
 ## Testing
 
@@ -89,13 +61,11 @@ The plugin uses
 [built release workflow](./.github/workflows/built-release.yml) to compile and
 tag releases. Whenever a new version is detected in the root plugin's headers in
 the `wp-export-single-post.php` file or in the `composer.json` file, the workflow will
-automatically build the plugin and tag it with a new version. The built tag will
-contain all the required front-end assets the plugin may require. This works
-well for publishing to WordPress.org or for submodule-ing.
+automatically build the plugin and tag it with a new version.
 
 When you are ready to release a new version of the plugin, you can run
-`npm run release`/`composer release` to start the process of setting up a new
-release. If you want to do this manually you can follow these steps:
+`composer release` to start the process of setting up a new release. If you
+want to do this manually you can follow these steps:
 
 1. Change the `Version` in the `wp-export-single-post.php` file to a new higher-level version.
 
@@ -104,7 +74,7 @@ release. If you want to do this manually you can follow these steps:
 	+ * Version: 0.0.1
 	```
 
-	**✨ `npm run release` will do this for you automatically.**
+	**✨ `composer release` will do this for you automatically.**
 
 2. Commit your changes and push to the repository.
 3. Check the actions tab in the repository to see the progress of the release.

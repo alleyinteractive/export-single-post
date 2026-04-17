@@ -1,13 +1,13 @@
 <?php
 /**
- * Create WordPress Plugin Tests: Example Feature Test
+ * Export Single Post Tests: Example Feature Test
  *
- * @package create-wordpress-plugin
+ * @package wp-export-single-post
  */
 
-namespace Alley\WP\Create_WordPress_Plugin\Tests\Feature;
+namespace Alley\WP\Export_Single_Post\Tests\Feature;
 
-use Alley\WP\Create_WordPress_Plugin\Tests\TestCase;
+use Alley\WP\Export_Single_Post\Tests\TestCase;
 
 /**
  * A test suite for an example feature.

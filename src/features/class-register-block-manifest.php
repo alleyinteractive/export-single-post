@@ -2,12 +2,12 @@
 /**
  * Register_Block_Manifest class file
  *
- * @package create-wordpress-plugin
+ * @package wp-export-single-post
  */
 
 declare(strict_types=1);
 
-namespace Alley\WP\Create_WordPress_Plugin\Features;
+namespace Alley\WP\Export_Single_Post\Features;
 
 use Alley\WP\Types\Feature;
 
@@ -26,7 +26,7 @@ class Register_Block_Manifest implements Feature {
 	 * Register blocks from the `blocks-manifest.php` file.
 	 */
 	public function register_blocks_from_manifest(): void {
-		if ( ! file_exists( CREATE_WORDPRESS_PLUGIN_DIR . '/build/blocks-manifest.php' ) ) {
+		if ( ! file_exists( WP_EXPORT_SINGLE_POST_DIR . '/build/blocks-manifest.php' ) ) {
 			return;
 		}
 
@@ -38,7 +38,7 @@ class Register_Block_Manifest implements Feature {
 		 * @see https://make.wordpress.org/core/2025/03/13/more-efficient-block-type-registration-in-6-8/
 		 */
 		if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
-			wp_register_block_types_from_metadata_collection( CREATE_WORDPRESS_PLUGIN_DIR . '/build', CREATE_WORDPRESS_PLUGIN_DIR . '/build/blocks-manifest.php' );
+			wp_register_block_types_from_metadata_collection( WP_EXPORT_SINGLE_POST_DIR . '/build', WP_EXPORT_SINGLE_POST_DIR . '/build/blocks-manifest.php' );
 			return;
 		}
 
@@ -49,7 +49,7 @@ class Register_Block_Manifest implements Feature {
 		 * @see https://make.wordpress.org/core/2024/10/17/new-block-type-registration-apis-to-improve-performance-in-wordpress-6-7/
 		 */
 		if ( function_exists( 'wp_register_block_metadata_collection' ) ) {
-			wp_register_block_metadata_collection( CREATE_WORDPRESS_PLUGIN_DIR . '/build', CREATE_WORDPRESS_PLUGIN_DIR . '/build/blocks-manifest.php' );
+			wp_register_block_metadata_collection( WP_EXPORT_SINGLE_POST_DIR . '/build', WP_EXPORT_SINGLE_POST_DIR . '/build/blocks-manifest.php' );
 		}
 
 		/**
@@ -59,10 +59,10 @@ class Register_Block_Manifest implements Feature {
 		 *
 		 * @var array<string, array<string, mixed>> $manifest_data The blocks manifest data.
 		 */
-		$manifest_data = require CREATE_WORDPRESS_PLUGIN_DIR . '/build/blocks-manifest.php';
+		$manifest_data = require WP_EXPORT_SINGLE_POST_DIR . '/build/blocks-manifest.php';
 
 		foreach ( array_keys( $manifest_data ) as $block_type ) {
-			register_block_type( CREATE_WORDPRESS_PLUGIN_DIR . "/build/{$block_type}" );
+			register_block_type( WP_EXPORT_SINGLE_POST_DIR . "/build/{$block_type}" );
 		}
 	}
 }

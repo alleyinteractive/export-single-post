@@ -4,7 +4,7 @@ Features should be PHP classes that implement the [`Alley\WP\Types\Feature`
 interface](https://github.com/alleyinteractive/wp-type-extensions/blob/main/src/types/interface-feature.php).
 
 Features should be located in the `src/features` directory of the plugin and
-have namespace `Alley\WP\Create_WordPress_Plugin\Features`.
+have namespace `Alley\WP\Export_Single_Post\Features`.
 
 You can generate new features using the scaffolder: `npm run scaffold feature`.
 
@@ -60,7 +60,7 @@ lyrics would be passed in when the feature was called, as shown above.
  * @package Create_WordPress_Plugin
  */
 
-namespace Alley\WP\Create_WordPress_Plugin\Features;
+namespace Alley\WP\Export_Single_Post\Features;
 
 use Alley\WP\Types\Feature;
 

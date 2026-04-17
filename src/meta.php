@@ -2,10 +2,12 @@
 /**
  * Contains functions for working with meta.
  *
- * @package create-wordpress-plugin
+ * @package wp-export-single-post
  */
 
-namespace Alley\WP\Create_WordPress_Plugin;
+declare(strict_types=1);
+
+namespace Alley\WP\Export_Single_Post;
 
 use function Mantle\Support\Helpers\register_meta_from_file;
 

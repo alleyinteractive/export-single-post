@@ -2,16 +2,16 @@
 /**
  * Load_Entries class file
  *
- * @package create-wordpress-plugin
+ * @package wp-export-single-post
  */
 
 declare(strict_types=1);
 
-namespace Alley\WP\Create_WordPress_Plugin\Features;
+namespace Alley\WP\Export_Single_Post\Features;
 
 use Alley\WP\Types\Feature;
 
-use function Alley\WP\Create_WordPress_Plugin\validate_path;
+use function Alley\WP\Export_Single_Post\validate_path;
 
 /**
  * Load the built entries from the build directory.
@@ -51,17 +51,17 @@ class Load_Entries implements Feature {
 			 *
 			 * @var string[]|false
 			 */
-			$cache = apcu_fetch( 'create_wordpress_plugin_entries' );
+			$cache = apcu_fetch( 'wp_export_single_post_entries' );
 
 			if ( is_array( $cache ) ) {
 				return $cache;
 			}
 		}
 
-		$files = glob( CREATE_WORDPRESS_PLUGIN_DIR . '/build/**/index.php' ) ?: [];
+		$files = glob( WP_EXPORT_SINGLE_POST_DIR . '/build/**/index.php' ) ?: [];
 
 		if ( $this->cache && function_exists( 'apcu_store' ) ) {
-			apcu_store( 'create_wordpress_plugin_entries', $files, HOUR_IN_SECONDS );
+			apcu_store( 'wp_export_single_post_entries', $files, HOUR_IN_SECONDS );
 		}
 
 		return $files;

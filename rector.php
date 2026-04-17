@@ -3,7 +3,7 @@
  * Rector Configuration
  *
  * @link https://getrector.com/documentation
- * @package create-wordpress-plugin
+ * @package wp-export-single-post
  */
 
 declare(strict_types=1);

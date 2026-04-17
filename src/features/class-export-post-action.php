@@ -20,9 +20,9 @@ class Export_Post_Action implements Feature {
 	 * Boot the feature.
 	 */
 	public function boot(): void {
-		add_filter( 'post_row_actions', [ $this, 'add_export_link' ], 10, 2 );
-		add_filter( 'page_row_actions', [ $this, 'add_export_link' ], 10, 2 );
-		add_action( 'admin_post_export_single_post', [ $this, 'handle_export' ] );
+		add_filter( 'post_row_actions', $this->add_export_link( ... ), 10, 2 );
+		add_filter( 'page_row_actions', $this->add_export_link( ... ), 10, 2 );
+		add_action( 'admin_post_export_single_post', $this->handle_export( ... ) );
 		add_action(
 			'admin_post_nopriv_export_single_post',
 			static function (): void {

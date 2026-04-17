@@ -132,4 +132,86 @@ class ExportPostActionTest extends TestCase {
 		$this->assertStringContainsString( '<wp:post_id>' . $post->ID . '</wp:post_id>', $xml );
 		$this->assertStringContainsString( '<wp:post_id>' . $attachment->ID . '</wp:post_id>', $xml );
 	}
+
+	public function test_generate_export_includes_post_terms(): void {
+		$post = $this->factory()->post->create_and_get( [ 'post_status' => 'publish' ] );
+		$term = $this->factory()->term->create_and_get( [
+			'taxonomy' => 'category',
+			'name'     => 'Exported Cat',
+			'slug'     => 'exported-cat',
+		] );
+		wp_set_post_terms( $post->ID, [ $term->term_id ], 'category' );
+
+		$feature = new Export_Post_Action();
+		$xml     = $feature->generate_export( $post );
+
+		$this->assertStringContainsString( '<wp:category_nicename><![CDATA[exported-cat]]></wp:category_nicename>', $xml );
+	}
+
+	public function test_generate_export_excludes_unrelated_terms(): void {
+		$post       = $this->factory()->post->create_and_get( [ 'post_status' => 'publish' ] );
+		$other_post = $this->factory()->post->create_and_get( [ 'post_status' => 'publish' ] );
+		$term       = $this->factory()->term->create_and_get( [
+			'taxonomy' => 'category',
+			'name'     => 'Other Cat',
+			'slug'     => 'other-cat',
+		] );
+		wp_set_post_terms( $other_post->ID, [ $term->term_id ], 'category' );
+
+		$feature = new Export_Post_Action();
+		$xml     = $feature->generate_export( $post );
+
+		$this->assertStringNotContainsString( '<wp:category_nicename><![CDATA[other-cat]]></wp:category_nicename>', $xml );
+	}
+
+	public function test_generate_export_includes_ancestor_terms(): void {
+		$parent = $this->factory()->term->create_and_get( [
+			'taxonomy' => 'category',
+			'name'     => 'Parent Cat',
+			'slug'     => 'parent-cat',
+		] );
+		$child  = $this->factory()->term->create_and_get( [
+			'taxonomy' => 'category',
+			'name'     => 'Child Cat',
+			'slug'     => 'child-cat',
+			'parent'   => $parent->term_id,
+		] );
+		$post   = $this->factory()->post->create_and_get( [ 'post_status' => 'publish' ] );
+		wp_set_post_terms( $post->ID, [ $child->term_id ], 'category' );
+
+		$feature = new Export_Post_Action();
+		$xml     = $feature->generate_export( $post );
+
+		$this->assertStringContainsString( '<wp:category_nicename><![CDATA[child-cat]]></wp:category_nicename>', $xml );
+		$this->assertStringContainsString( '<wp:category_nicename><![CDATA[parent-cat]]></wp:category_nicename>', $xml );
+	}
+
+	public function test_generate_export_with_no_terms(): void {
+		$post = $this->factory()->post->create_and_get( [ 'post_status' => 'publish' ] );
+		wp_set_post_terms( $post->ID, [], 'category' );
+
+		$feature = new Export_Post_Action();
+		$xml     = $feature->generate_export( $post );
+
+		$this->assertStringNotContainsString( '<wp:category>', $xml );
+		$this->assertStringNotContainsString( '<wp:tag>', $xml );
+		$this->assertStringNotContainsString( '<wp:term>', $xml );
+	}
+
+	public function test_generate_export_includes_custom_taxonomy_terms(): void {
+		register_taxonomy( 'export_test_tax', 'post', [ 'public' => true ] );
+
+		$term = $this->factory()->term->create_and_get( [
+			'taxonomy' => 'export_test_tax',
+			'name'     => 'Test Term',
+			'slug'     => 'test-term',
+		] );
+		$post = $this->factory()->post->create_and_get( [ 'post_status' => 'publish' ] );
+		wp_set_post_terms( $post->ID, [ $term->term_id ], 'export_test_tax' );
+
+		$feature = new Export_Post_Action();
+		$xml     = $feature->generate_export( $post );
+
+		$this->assertStringContainsString( '<wp:term_slug><![CDATA[test-term]]></wp:term_slug>', $xml );
+	}
 }

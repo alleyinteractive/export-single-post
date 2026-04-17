@@ -138,12 +138,39 @@ class Export_Post_Action implements Feature {
 			return $query;
 		};
 
+		$all_post_ids = array_merge( [ $post->ID ], (array) $attachment_ids );
+		$term_ids     = [];
+
+		foreach ( $all_post_ids as $pid ) {
+			$terms = wp_get_post_terms( $pid, array_values( get_taxonomies() ), [ 'fields' => 'all' ] );
+			if ( is_wp_error( $terms ) ) {
+				continue;
+			}
+			foreach ( $terms as $term ) {
+				$term_ids[ $term->term_id ] = $term->term_id;
+				foreach ( get_ancestors( $term->term_id, $term->taxonomy, 'taxonomy' ) as $ancestor_id ) {
+					$term_ids[ $ancestor_id ] = $ancestor_id;
+				}
+			}
+		}
+
+		$term_ids_sql = implode( ',', $term_ids ) ?: '0';
+
+		$restrict_term_ids = static function ( array $clauses ) use ( $term_ids_sql ): array {
+			$addition         = "t.term_id IN ({$term_ids_sql})";
+			$clauses['where'] = $clauses['where']
+				? $clauses['where'] . " AND {$addition}"
+				: $addition;
+			return $clauses;
+		};
+
 		$filename     = sanitize_file_name( $post->post_name ?: (string) $post->ID ) . '.xml';
 		$set_filename = static fn(): string => $filename;
 
 		require_once ABSPATH . 'wp-admin/includes/export.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.IncludingFile
 
 		add_filter( 'query', $restrict_ids );
+		add_filter( 'terms_clauses', $restrict_term_ids );
 		add_filter( 'export_wp_filename', $set_filename );
 
 		ob_start();
@@ -151,6 +178,7 @@ class Export_Post_Action implements Feature {
 		$xml = (string) ob_get_clean();
 
 		remove_filter( 'query', $restrict_ids );
+		remove_filter( 'terms_clauses', $restrict_term_ids );
 		remove_filter( 'export_wp_filename', $set_filename );
 
 		return $xml;

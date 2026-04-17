@@ -16,9 +16,18 @@ use Alley\WP\Export_Single_Post\Tests\TestCase;
  * Tests for the Export_Post_Action feature.
  */
 class ExportPostActionTest extends TestCase {
+	private static ?Export_Post_Action $feature = null;
+
+	private function feature(): Export_Post_Action {
+		if ( null === self::$feature ) {
+			self::$feature = $this->feature();
+		}
+
+		return self::$feature;
+	}
 
 	public function test_get_supported_post_types_returns_public_post_types(): void {
-		$feature = new Export_Post_Action();
+		$feature = $this->feature();
 		$types   = $feature->get_supported_post_types();
 
 		$this->assertContains( 'post', $types );
@@ -28,7 +37,7 @@ class ExportPostActionTest extends TestCase {
 	public function test_post_types_filter_can_modify_list(): void {
 		add_filter( 'wp_export_single_post_post_types', fn(): array => [ 'post' ] );
 
-		$feature = new Export_Post_Action();
+		$feature = $this->feature();
 		$types   = $feature->get_supported_post_types();
 
 		$this->assertContains( 'post', $types );
@@ -43,7 +52,7 @@ class ExportPostActionTest extends TestCase {
 			2
 		);
 
-		$feature = new Export_Post_Action();
+		$feature = $this->feature();
 		$types   = $feature->get_supported_post_types();
 
 		$this->assertNotContains( 'page', $types );
@@ -56,7 +65,7 @@ class ExportPostActionTest extends TestCase {
 
 		$post = $this->factory()->post->create_and_get();
 
-		$feature = new Export_Post_Action();
+		$feature = $this->feature();
 		$actions = $feature->add_export_link( [], $post );
 
 		$this->assertArrayHasKey( 'export', $actions );
@@ -70,7 +79,7 @@ class ExportPostActionTest extends TestCase {
 
 		$post = $this->factory()->post->create_and_get();
 
-		$feature = new Export_Post_Action();
+		$feature = $this->feature();
 		$actions = $feature->add_export_link( [], $post );
 
 		$this->assertArrayNotHasKey( 'export', $actions );
@@ -84,7 +93,7 @@ class ExportPostActionTest extends TestCase {
 
 		$post = $this->factory()->post->create_and_get();
 
-		$feature = new Export_Post_Action();
+		$feature = $this->feature();
 		$actions = $feature->add_export_link( [], $post );
 
 		$this->assertArrayNotHasKey( 'export', $actions );
@@ -99,7 +108,7 @@ class ExportPostActionTest extends TestCase {
 			]
 		);
 
-		$feature = new Export_Post_Action();
+		$feature = $this->feature();
 		$xml     = $feature->generate_export( $post );
 
 		$this->assertStringContainsString( '<wp:post_id>' . $post->ID . '</wp:post_id>', $xml );
@@ -109,7 +118,7 @@ class ExportPostActionTest extends TestCase {
 		$post       = $this->factory()->post->create_and_get( [ 'post_status' => 'publish' ] );
 		$other_post = $this->factory()->post->create_and_get( [ 'post_status' => 'publish' ] );
 
-		$feature = new Export_Post_Action();
+		$feature = $this->feature();
 		$xml     = $feature->generate_export( $post );
 
 		$this->assertStringContainsString( '<wp:post_id>' . $post->ID . '</wp:post_id>', $xml );
@@ -126,7 +135,7 @@ class ExportPostActionTest extends TestCase {
 			]
 		);
 
-		$feature = new Export_Post_Action();
+		$feature = $this->feature();
 		$xml     = $feature->generate_export( $post );
 
 		$this->assertStringContainsString( '<wp:post_id>' . $post->ID . '</wp:post_id>', $xml );
@@ -142,7 +151,7 @@ class ExportPostActionTest extends TestCase {
 		] );
 		wp_set_post_terms( $post->ID, [ $term->term_id ], 'category' );
 
-		$feature = new Export_Post_Action();
+		$feature = $this->feature();
 		$xml     = $feature->generate_export( $post );
 
 		$this->assertStringContainsString( '<wp:category_nicename><![CDATA[exported-cat]]></wp:category_nicename>', $xml );
@@ -158,7 +167,7 @@ class ExportPostActionTest extends TestCase {
 		] );
 		wp_set_post_terms( $other_post->ID, [ $term->term_id ], 'category' );
 
-		$feature = new Export_Post_Action();
+		$feature = $this->feature();
 		$xml     = $feature->generate_export( $post );
 
 		$this->assertStringNotContainsString( '<wp:category_nicename><![CDATA[other-cat]]></wp:category_nicename>', $xml );
@@ -179,7 +188,7 @@ class ExportPostActionTest extends TestCase {
 		$post   = $this->factory()->post->create_and_get( [ 'post_status' => 'publish' ] );
 		wp_set_post_terms( $post->ID, [ $child->term_id ], 'category' );
 
-		$feature = new Export_Post_Action();
+		$feature = $this->feature();
 		$xml     = $feature->generate_export( $post );
 
 		$this->assertStringContainsString( '<wp:category_nicename><![CDATA[child-cat]]></wp:category_nicename>', $xml );
@@ -190,7 +199,7 @@ class ExportPostActionTest extends TestCase {
 		$post = $this->factory()->post->create_and_get( [ 'post_status' => 'publish' ] );
 		wp_set_post_terms( $post->ID, [], 'category' );
 
-		$feature = new Export_Post_Action();
+		$feature = $this->feature();
 		$xml     = $feature->generate_export( $post );
 
 		$this->assertStringNotContainsString( '<wp:category>', $xml );
@@ -209,7 +218,7 @@ class ExportPostActionTest extends TestCase {
 		$post = $this->factory()->post->create_and_get( [ 'post_status' => 'publish' ] );
 		wp_set_post_terms( $post->ID, [ $term->term_id ], 'export_test_tax' );
 
-		$feature = new Export_Post_Action();
+		$feature = $this->feature();
 		$xml     = $feature->generate_export( $post );
 
 		$this->assertStringContainsString( '<wp:term_slug><![CDATA[test-term]]></wp:term_slug>', $xml );

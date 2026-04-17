@@ -19,7 +19,7 @@ class ExportPostActionTest extends TestCase {
 	private static ?Export_Post_Action $feature = null;
 
 	private function feature(): Export_Post_Action {
-		if ( null === self::$feature ) {
+		if ( ! self::$feature instanceof \Alley\WP\Export_Single_Post\Features\Export_Post_Action ) {
 			self::$feature = $this->feature();
 		}
 

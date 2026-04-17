@@ -30,7 +30,7 @@ class Export_Post_Action implements Feature {
 			}
 		);
 
-		if ( ! function_exists( 'wxr_cdata' ) ) { // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.IncludingFile
+		if ( ! function_exists( 'wxr_cdata' ) && ! function_exists( __NAMESPACE__ . '\\wxr_cdata' ) ) { // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.IncludingFile
 			require_once ABSPATH . 'wp-admin/includes/export.php';
 		}
 	}

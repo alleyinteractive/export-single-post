@@ -11,19 +11,38 @@ namespace Alley\WP\Export_Single_Post\Tests\Feature;
 
 use Alley\WP\Export_Single_Post\Features\Export_Post_Action;
 use Alley\WP\Export_Single_Post\Tests\TestCase;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 
 /**
  * Tests for the Export_Post_Action feature.
  */
 class ExportPostActionTest extends TestCase {
-	private static ?Export_Post_Action $feature = null;
-
 	private function feature(): Export_Post_Action {
-		if ( ! self::$feature instanceof \Alley\WP\Export_Single_Post\Features\Export_Post_Action ) {
-			self::$feature = $this->feature();
+		global $wp_filter;
+
+		if ( ! isset( $wp_filter['post_row_actions'] ) || ! $wp_filter['post_row_actions'] instanceof \WP_Hook ) {
+			$this->fail( 'Expected post_row_actions hook to be registered.' );
 		}
 
-		return self::$feature;
+		foreach ( $wp_filter['post_row_actions']->callbacks as $callbacks ) {
+			foreach ( $callbacks as $callback_data ) {
+				$callback = $callback_data['function'];
+
+				if ( is_array( $callback ) && $callback[0] instanceof Export_Post_Action && 'add_export_link' === $callback[1] ) {
+					return $callback[0];
+				}
+
+				if ( $callback instanceof \Closure ) {
+					$instance = ( new \ReflectionFunction( $callback ) )->getClosureThis();
+
+					if ( $instance instanceof Export_Post_Action ) {
+						return $instance;
+					}
+				}
+			}
+		}
+
+		$this->fail( 'Could not find loaded Export_Post_Action callback on post_row_actions.' );
 	}
 
 	public function test_get_supported_post_types_returns_public_post_types(): void {
@@ -99,6 +118,7 @@ class ExportPostActionTest extends TestCase {
 		$this->assertArrayNotHasKey( 'export', $actions );
 	}
 
+	#[RunInSeparateProcess]
 	public function test_generate_export_contains_post(): void {
 		$post = $this->factory()->post->create_and_get(
 			[
@@ -114,6 +134,7 @@ class ExportPostActionTest extends TestCase {
 		$this->assertStringContainsString( '<wp:post_id>' . $post->ID . '</wp:post_id>', $xml );
 	}
 
+	#[RunInSeparateProcess]
 	public function test_generate_export_excludes_other_posts(): void {
 		$post       = $this->factory()->post->create_and_get( [ 'post_status' => 'publish' ] );
 		$other_post = $this->factory()->post->create_and_get( [ 'post_status' => 'publish' ] );
@@ -125,6 +146,7 @@ class ExportPostActionTest extends TestCase {
 		$this->assertStringNotContainsString( '<wp:post_id>' . $other_post->ID . '</wp:post_id>', $xml );
 	}
 
+	#[RunInSeparateProcess]
 	public function test_generate_export_includes_attachments(): void {
 		$post       = $this->factory()->post->create_and_get( [ 'post_status' => 'publish' ] );
 		$attachment = $this->factory()->post->create_and_get(
@@ -142,6 +164,7 @@ class ExportPostActionTest extends TestCase {
 		$this->assertStringContainsString( '<wp:post_id>' . $attachment->ID . '</wp:post_id>', $xml );
 	}
 
+	#[RunInSeparateProcess]
 	public function test_generate_export_includes_post_terms(): void {
 		$post = $this->factory()->post->create_and_get( [ 'post_status' => 'publish' ] );
 		$term = $this->factory()->term->create_and_get( [
@@ -157,6 +180,7 @@ class ExportPostActionTest extends TestCase {
 		$this->assertStringContainsString( '<wp:category_nicename><![CDATA[exported-cat]]></wp:category_nicename>', $xml );
 	}
 
+	#[RunInSeparateProcess]
 	public function test_generate_export_excludes_unrelated_terms(): void {
 		$post       = $this->factory()->post->create_and_get( [ 'post_status' => 'publish' ] );
 		$other_post = $this->factory()->post->create_and_get( [ 'post_status' => 'publish' ] );
@@ -173,6 +197,7 @@ class ExportPostActionTest extends TestCase {
 		$this->assertStringNotContainsString( '<wp:category_nicename><![CDATA[other-cat]]></wp:category_nicename>', $xml );
 	}
 
+	#[RunInSeparateProcess]
 	public function test_generate_export_includes_ancestor_terms(): void {
 		$parent = $this->factory()->term->create_and_get( [
 			'taxonomy' => 'category',
@@ -195,6 +220,7 @@ class ExportPostActionTest extends TestCase {
 		$this->assertStringContainsString( '<wp:category_nicename><![CDATA[parent-cat]]></wp:category_nicename>', $xml );
 	}
 
+	#[RunInSeparateProcess]
 	public function test_generate_export_with_no_terms(): void {
 		$post = $this->factory()->post->create_and_get( [ 'post_status' => 'publish' ] );
 		wp_set_post_terms( $post->ID, [], 'category' );
@@ -207,6 +233,7 @@ class ExportPostActionTest extends TestCase {
 		$this->assertStringNotContainsString( '<wp:term>', $xml );
 	}
 
+	#[RunInSeparateProcess]
 	public function test_generate_export_includes_custom_taxonomy_terms(): void {
 		register_taxonomy( 'export_test_tax', 'post', [ 'public' => true ] );
 

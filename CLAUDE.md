@@ -29,7 +29,7 @@ Run a single test file:
 
 ## Testing
 
-Tests use [Mantle Testkit](https://mantle.alley.com/) (WordPress-aware PHPUnit). The base `TestCase` in `tests/TestCase.php` extends `Mantle\Testkit\Test_Case` with `Prevent_Remote_Requests`. Tests run against SQLite.
+Tests use [Mantle Testkit](https://mantle.alley.com/) (WordPress-aware PHPUnit). The base `TestCase` in `tests/TestCase.php` extends `Mantle\Testkit\Test_Case` with `Prevent_Remote_Requests`.
 
 - `tests/Unit/` — isolated unit tests
 - `tests/Feature/` — full WordPress environment integration tests

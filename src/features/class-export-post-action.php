@@ -29,10 +29,6 @@ class Export_Post_Action implements Feature {
 				auth_redirect();
 			}
 		);
-
-		if ( ! function_exists( 'wxr_cdata' ) && ! function_exists( __NAMESPACE__ . '\\wxr_cdata' ) ) { // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.IncludingFile
-			require_once ABSPATH . 'wp-admin/includes/export.php';
-		}
 	}
 
 	/**
@@ -174,6 +170,10 @@ class Export_Post_Action implements Feature {
 		add_filter( 'query', $restrict_ids );
 		add_filter( 'terms_clauses', $restrict_term_ids );
 		add_filter( 'export_wp_filename', $set_filename );
+
+		if ( ! function_exists( 'wxr_cdata' ) && ! function_exists( __NAMESPACE__ . '\\wxr_cdata' ) ) { // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.IncludingFile
+			require_once ABSPATH . 'wp-admin/includes/export.php';
+		}
 
 		ob_start();
 		export_wp( [ 'content' => 'all' ] );

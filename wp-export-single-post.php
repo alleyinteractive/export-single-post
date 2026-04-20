@@ -1,22 +1,22 @@
 <?php
 /**
- * Plugin Name: Create WordPress Plugin
- * Plugin URI: https://github.com/alleyinteractive/create-wordpress-plugin
- * Description: A skeleton WordPress plugin
- * Version: 0.0.0
- * Author: author_name
- * Author URI: https://github.com/alleyinteractive/create-wordpress-plugin
+ * Plugin Name: Export Single Post
+ * Plugin URI: https://github.com/alleyinteractive/wp-export-single-post
+ * Description: Exports single posts in WordPress WXR format
+ * Version: 0.1.0
+ * Author: Alley Interactive
+ * Author URI: https://github.com/alleyinteractive/wp-export-single-post
  * Requires at least: 6.5
  * Requires PHP: 8.2
  * Tested up to: 6.8
  *
- * Text Domain: create-wordpress-plugin
+ * Text Domain: wp-export-single-post
  * Domain Path: /languages/
  *
- * @package create-wordpress-plugin
+ * @package wp-export-single-post
  */
 
-namespace Alley\WP\Create_WordPress_Plugin;
+namespace Alley\WP\Export_Single_Post;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Root directory to this plugin.
  */
-define( 'CREATE_WORDPRESS_PLUGIN_DIR', __DIR__ );
+define( 'WP_EXPORT_SINGLE_POST_DIR', __DIR__ );
 
 /* Start Composer Loader */
 
@@ -41,7 +41,7 @@ if ( ! file_exists( __DIR__ . '/vendor/wordpress-autoload.php' ) ) {
 			function () {
 				?>
 				<div class="notice notice-error">
-					<p><?php esc_html_e( 'Composer is not installed and create-wordpress-plugin cannot load. Try using a `*-built` branch if the plugin is being loaded as a submodule.', 'create-wordpress-plugin' ); ?></p>
+					<p><?php esc_html_e( 'Composer is not installed and wp-export-single-post cannot load. Try using a `*-built` branch if the plugin is being loaded as a submodule.', 'wp-export-single-post' ); ?></p>
 				</div>
 				<?php
 			}
@@ -57,10 +57,6 @@ if ( ! file_exists( __DIR__ . '/vendor/wordpress-autoload.php' ) ) {
 /* End Composer Loader */
 
 // Load the plugin's main files.
-require_once __DIR__ . '/src/assets.php';
-require_once __DIR__ . '/src/meta.php';
 require_once __DIR__ . '/src/main.php';
 
-register_post_meta_from_defs();
-register_term_meta_from_defs();
 main();

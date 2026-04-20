@@ -1,11 +1,13 @@
 <?php
 /**
- * Create WordPress Plugin Tests: Example Unit Test
+ * Export Single Post Tests: Example Unit Test
  *
- * @package create-wordpress-plugin
+ * @package wp-export-single-post
  */
 
-namespace Alley\WP\Create_WordPress_Plugin\Tests\Unit;
+declare(strict_types=1);
+
+namespace Alley\WP\Export_Single_Post\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 

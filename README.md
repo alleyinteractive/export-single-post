@@ -1,175 +1,55 @@
-<!--delete-->
-# Create WordPress Plugin
+# Export Single Post
 
-This is a skeleton WordPress plugin that can scaffold a WordPress plugin. This
-template includes a base plugin file, autoloaded PHP files, unit tests powered
-by [Mantle](https://mantle.alley.com/), front-end assets compiled via Webpack,
-and Continuous Integration [via GitHub Actions](.github/workflows). Actions are
-configured to test the plugin and also [build it for releases](https://github.com/alleyinteractive/action-release).
-The workflows will also create a `*-built` branch, too.
+Contributors: alleyinteractive
 
-The plugin supports front-end assets which can be enqueued inside
-`src/assets.php` or from within an entry points `index.php` file. For plugins
-that don't require front-end assets, the configuration script below will prompt
-you to delete the front-end files if you don't wish to use them.
+Tags: alleyinteractive, wp-export-single-post
 
-## Getting Started
-
-Follow these steps to get started:
-
-1. Press the "Use template" button at the top of this repo to create a new repo
-   with the contents of this skeleton.
-2. Run `make` (or `php ./configure.php`) to run a script that will replace all
-   placeholders throughout all the files.
-3. Have fun creating your plugin! 🎊
-
-<!--/delete-->
-
-# Create WordPress Plugin
-
-Contributors: author_username
-
-Tags: vendor_name, create-wordpress-plugin
-
-Stable tag: 0.0.0
+Stable tag: 0.1.0
 
 Requires at least: 6.3
 
-Tested up to: 6.7
+Tested up to: 6.9
 
 Requires PHP: 8.2
 
 License: GPL v2 or later
 
-[![Testing Suite](https://github.com/alleyinteractive/create-wordpress-plugin/actions/workflows/all-pr-tests.yml/badge.svg?branch=develop)](https://github.com/alleyinteractive/create-wordpress-plugin/actions/workflows/all-pr-tests.yml)
+[![Testing Suite](https://github.com/alleyinteractive/export-single-post/actions/workflows/all-pr-tests.yml/badge.svg?branch=develop)](https://github.com/alleyinteractive/export-single-post/actions/workflows/all-pr-tests.yml)
 
-A skeleton WordPress plugin.
+Exports single posts in WordPress WXR format.
 
 ## Installation
 
 You can install the package via Composer:
 
 ```bash
-composer require alleyinteractive/create-wordpress-plugin
+composer require alleyinteractive/export-single-post
 ```
 
 ## Usage
 
-Activate the plugin in WordPress and use it like so:
+Once activated, an **Export** link appears in the row actions for each post and page in the WordPress admin list view. Clicking it downloads a WXR XML file containing that post and all of its attachments. The link is only shown to users with the `export` capability.
+
+### Filters
+
+**`wp_export_single_post_post_types`** — Override the full list of post types that display the Export link. Receives an array of post type slugs (defaults to all post types with `can_export` set).
 
 ```php
-$plugin = Create_WordPress_Plugin\Skeleton\Example_Plugin();
-$plugin->perform_magic();
+add_filter( 'wp_export_single_post_post_types', function ( array $post_types ): array {
+    return [ 'post', 'page' ];
+} );
 ```
 
-## Development
+**`wp_export_single_post_should_include_post_type`** — Allow or block a specific post type. Receives a boolean and the post type slug.
 
-To setup a WordPress installation and run the plugin in a local environment, you
-can use `wp-env` via the `composer dev` command:
-
-```sh
-npm install
-composer dev
+```php
+add_filter( 'wp_export_single_post_should_include_post_type', function ( bool $include, string $post_type ): bool {
+    return $post_type !== 'my_private_type';
+}, 10, 2 );
 ```
 
-The command will start a local WordPress environment with the plugin activated
-while also running the front-end assets build process. You can also run `npm run
-start` to start the front-end assets build process separately. The front-end
-assets will be compiled into the `build` directory and will be enqueued
-automatically by the plugin.
-
-## Registering Meta
-
-The plugin supports registering post and term meta via JSON files located in the
-`config` directory. Out of the box, the plugin will look for
-`config/post-meta.json` for post meta and `config/term-meta.json` for term meta.
-
-```json
-{
-  "$schema": "https://raw.githubusercontent.com/alleyinteractive/mantle-framework/HEAD/src/mantle/support/schema/meta.json",
-  "example_meta_key": {
-    "post_types": "article",
-    "type": "string"
-  },
-  "another_meta_key": {
-    "post_types": [ "article", "page" ],
-    "type": "number",
-    "single": false,
-    "default": 0
-  }
-}
-```
-
-For more information on how to register meta via JSON files,
-[see the documentation](https://mantle.alley.com/docs/features/support/helpers#register_meta_from_file).
-<!--front-end-->
-## The `entries` directory and entry points
-
-All directories created in the `entries` directory can serve as entry points and will be compiled with [@wordpress/scripts](https://github.com/WordPress/gutenberg/blob/trunk/packages/scripts/README.md#scripts) into the `build` directory with an accompanied `index.asset.php` asset map.
-
-### Scaffolding an entry point
-
-To generate a new entry point, run the following command:
-
-```sh
-npm run create-entry
-```
-
-To generate a new slotfill, run the following command:
-
-```sh
-npm run create-slotfill
-```
-
-The command will prompt the user through several options for creating an entry or slotfill. The entries are scaffolded with the `@alleyinteractive/create-entry` script. Run the help command to see all the options:
-
-```sh
-npx @alleyinteractive/create-entry --help
-```
-[Visit the package README](https://www.npmjs.com/package/@alleyinteractive/create-entry) for more information.
-
-### Enqueuing Entry Points
-
-You can also include an `index.php` file in the entry point directory for enqueueing or registering a script. This file will then be moved to the build directory and will be auto-loaded with the `load_scripts()` function in the `functions.php` file. Alternatively, if a script is to be enqueued elsewhere there are helper functions in the `src/assets.php` file for getting the assets.
-
-### Scaffold a dynamic block with `create-block`
-
-Use the `create-block` command to create custom blocks with [@alleyinteractive/create-block](https://github.com/alleyinteractive/alley-scripts/tree/main/packages/create-block) script and follow the prompts to generate all the block assets in the `blocks/` directory.
-Block registration, script creation, etc will be scaffolded from the `create-block` script. Run `npm run build` to compile and build the custom block. Blocks are enqueued using the `load_scripts()` function in `src/assets.php`.
-
-### Updating WordPress Dependencies
-
-Update the [WordPress dependency packages](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-scripts/#packages-update) used in the project to their latest version.
-
-To update `@wordpress` dependencies to their latest version use the packages-update command:
-
-```sh
-npx wp-scripts packages-update
-```
-
-This script provides the following custom options:
-
--   `--dist-tag` – allows specifying a custom dist-tag when updating npm packages. Defaults to `latest`. This is especially useful when using [`@wordpress/dependency-extraction-webpack-plugin`](https://www.npmjs.com/package/@wordpress/dependency-extraction-webpack-plugin). It lets installing the npm dependencies at versions used by the given WordPress major version for local testing, etc. Example:
-
-```sh
-npx wp-scripts packages-update --dist-tag=wp-WPVERSION`
-```
-
-Where `WPVERSION` is the version of WordPress you are targeting. The version
-must include both the major and minor version (e.g., `6.7`). For example:
-
-```sh
-npx wp-scripts packages-update --dist-tag=wp-6.7`
-```
-<!--/front-end-->
 ## Testing
-<!--front-end-->
-Run `npm run test` to run Jest tests against JavaScript files. Run
-`npm run test:watch` to keep the test runner open and watching for changes.
 
-Run `npm run lint` to run ESLint against all JavaScript files. Linting will also
-happen when running development or production builds.
-<!--/front-end-->
 Run `composer test` to run tests against PHPUnit and the PHP code in the plugin.
 Unit testing code is written in PSR-4 format and can be found in the `tests`
 directory.
@@ -180,23 +60,21 @@ The plugin uses
 [action-release](https://github.com/alleyinteractive/action-release) via a
 [built release workflow](./.github/workflows/built-release.yml) to compile and
 tag releases. Whenever a new version is detected in the root plugin's headers in
-the `plugin.php` file or in the `composer.json` file, the workflow will
-automatically build the plugin and tag it with a new version. The built tag will
-contain all the required front-end assets the plugin may require. This works
-well for publishing to WordPress.org or for submodule-ing.
+the `wp-export-single-post.php` file or in the `composer.json` file, the workflow will
+automatically build the plugin and tag it with a new version.
 
 When you are ready to release a new version of the plugin, you can run
-`npm run release`/`composer release` to start the process of setting up a new
-release. If you want to do this manually you can follow these steps:
+`composer release` to start the process of setting up a new release. If you
+want to do this manually you can follow these steps:
 
-1. Change the `Version` in the `plugin.php` file to a new higher-level version.
+1. Change the `Version` in the `wp-export-single-post.php` file to a new higher-level version.
 
 	```diff
 	- * Version: 0.0.0
 	+ * Version: 0.0.1
 	```
 
-	**✨ `npm run release` will do this for you automatically.**
+	**✨ `composer release` will do this for you automatically.**
 
 2. Commit your changes and push to the repository.
 3. Check the actions tab in the repository to see the progress of the release.
@@ -213,7 +91,7 @@ This project is actively maintained by [Alley
 Interactive](https://github.com/alleyinteractive). Like what you see? [Come work
 with us](https://alley.com/careers/).
 
-- [author_name](https://github.com/author_username)
+- [Alley Interactive](https://github.com/alleyinteractive)
 - [All Contributors](../../contributors)
 
 ## License

@@ -1,7 +1,7 @@
 # Changelog
 
-All notable changes to `Create WordPress Plugin` will be documented in this file.
+All notable changes to `Export Single Post` will be documented in this file.
 
-## 0.1.0 - 202X-XX-XX
+## 0.1.0 - 2026-04-17
 
 - Initial release

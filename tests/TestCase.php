@@ -1,17 +1,19 @@
 <?php
 /**
- * Create WordPress Plugin Tests: Base Test Class
+ * Export Single Post Tests: Base Test Class
  *
- * @package create-wordpress-plugin
+ * @package wp-export-single-post
  */
 
-namespace Alley\WP\Create_WordPress_Plugin\Tests;
+declare(strict_types=1);
+
+namespace Alley\WP\Export_Single_Post\Tests;
 
 use Mantle\Testing\Concerns\Prevent_Remote_Requests;
 use Mantle\Testkit\Test_Case as TestkitTest_Case;
 
 /**
- * Create WordPress Plugin Base Test Case
+ * Export Single Post Base Test Case
  */
 abstract class TestCase extends TestkitTest_Case {
 	use Prevent_Remote_Requests;

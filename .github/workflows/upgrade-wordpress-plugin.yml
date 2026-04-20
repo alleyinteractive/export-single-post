@@ -15,5 +15,5 @@ jobs:
     - uses: actions/checkout@v5
     - uses: alleyinteractive/action-update-wordpress-plugin@v2.0.1
       with:
-        plugin-file: 'plugin.php'
+        plugin-file: 'wp-export-single-post.php'
         upgrade-npm-dependencies: "true"

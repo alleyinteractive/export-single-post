@@ -15,6 +15,7 @@ use Alley\WP\Features\Group;
 function main(): void {
 	$plugin = new Group(
 		new Features\Export_Post_Action(),
+		new Features\Export_Bulk_Action(),
 	);
 
 	/*

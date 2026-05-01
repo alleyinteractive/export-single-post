@@ -8,7 +8,7 @@
  * Author URI: https://github.com/alleyinteractive/wp-export-single-post
  * Requires at least: 6.5
  * Requires PHP: 8.2
- * Tested up to: 6.8
+ * Tested up to: 6.9.4
  *
  * Text Domain: wp-export-single-post
  * Domain Path: /languages/

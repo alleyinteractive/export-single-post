@@ -3,7 +3,7 @@
  * Plugin Name: Export Single Post
  * Plugin URI: https://github.com/alleyinteractive/wp-export-single-post
  * Description: Exports single posts in WordPress WXR format
- * Version: 0.1.0
+ * Version: 0.2.0
  * Author: Alley Interactive
  * Author URI: https://github.com/alleyinteractive/wp-export-single-post
  * Requires at least: 6.5
